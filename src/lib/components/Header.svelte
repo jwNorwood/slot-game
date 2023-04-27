@@ -9,7 +9,7 @@
 		<h1>Home</h1>
 	</a>
 
-	<LocaleSwitcher />
+	<!-- <LocaleSwitcher /> -->
 
 	<ThemeSwitcher />
 </header>
