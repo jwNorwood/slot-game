@@ -6,14 +6,14 @@ class Reel extends Phaser.GameObjects.Container {
         this.symbols = symbols;
         this.symbolsPerReel = rows;
         this.symbols = symbols;
-        this.createReel();
+        this.createReel(scene);
     }
 
-    createReel() {
+    createReel(scene) {
         var y = 0;
         for (var i = 0; i < this.symbolsPerReel; i++) {
             this.createRandomSymbol(y);
-            y += 50;
+            y += scene.scale.width / 6;
         }
     }
 
@@ -38,7 +38,7 @@ class Reel extends Phaser.GameObjects.Container {
         var y = 0;
         for (var i = 0; i < this.symbolsPerReel; i++) {
             this.createRandomSymbol(y);
-            y += 50;
+            y += this.scene.scale.width / 6;
         }
     }
 

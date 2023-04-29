@@ -7,7 +7,7 @@
 
 	onMount(async () => {
 		console.log('loading: ', loading);
-		const game = await import('../../game/game');
+		const game = await import('../game/game');
 		loading = false;
 		game.launch('game-container');
 	});
@@ -15,7 +15,7 @@
 
 {#if loading}
 	<div class="loading">
-		<div class="loading__text">Loading...</div>
+		Loading...
 	</div>
 {:else}
 	<UI>

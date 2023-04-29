@@ -1,4 +1,5 @@
 class Symbol extends Phaser.GameObjects.Sprite {
+
     constructor(scene, x, y, texture, frame, value, name) {
         super(scene, x, y, texture, frame);
         this.value = value;
@@ -6,8 +7,8 @@ class Symbol extends Phaser.GameObjects.Sprite {
         this.scene.add.existing(this);
         this.setInteractive();
         this.on('pointerdown', this.onSymbolClicked, this);
-        this.displayWidth = 50;
-        this.displayHeight = 50;
+        this.displayWidth = scene.scale.width / 6;
+        this.displayHeight = scene.scale.width / 6;
     }
     onSymbolClicked() {
         console.log(this.name);

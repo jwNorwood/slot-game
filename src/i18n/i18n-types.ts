@@ -6,8 +6,8 @@ export type BaseTranslation = BaseTranslationType
 export type BaseLocale = 'en'
 
 export type Locales =
+	| 'de'
 	| 'en'
-	| 'es'
 
 export type Translation = RootTranslation
 
@@ -15,53 +15,17 @@ export type Translations = RootTranslation
 
 type RootTranslation = {
 	/**
-	 * W​e​l​c​o​m​e​ ​t​o​ ​S​v​e​l​t​e​K​i​t
+	 * H​i​ ​{​n​a​m​e​}​!​ ​P​l​e​a​s​e​ ​l​e​a​v​e​ ​a​ ​s​t​a​r​ ​i​f​ ​y​o​u​ ​l​i​k​e​ ​t​h​i​s​ ​p​r​o​j​e​c​t​:​ ​h​t​t​p​s​:​/​/​g​i​t​h​u​b​.​c​o​m​/​i​v​a​n​h​o​f​e​r​/​t​y​p​e​s​a​f​e​-​i​1​8​n
+	 * @param {string} name
 	 */
-	HI: string
-	LOCALES: {
-		/**
-		 * C​h​a​n​g​e​ ​l​a​n​g​u​a​g​e
-		 */
-		description: string
-		/**
-		 * E​n​g​l​i​s​h
-		 */
-		en: string
-		/**
-		 * E​s​p​a​ñ​o​l
-		 */
-		es: string
-	}
-	/**
-	 * T​h​i​s​ ​l​o​g​ ​w​a​s​ ​c​a​l​l​e​d​ ​f​r​o​m​ ​'​{​f​i​l​e​N​a​m​e​}​'
-	 * @param {string} fileName
-	 */
-	log: RequiredParams<'fileName'>
+	HI: RequiredParams<'name'>
 }
 
 export type TranslationFunctions = {
 	/**
-	 * Welcome to SvelteKit
+	 * Hi {name}! Please leave a star if you like this project: https://github.com/ivanhofer/typesafe-i18n
 	 */
-	HI: () => LocalizedString
-	LOCALES: {
-		/**
-		 * Change language
-		 */
-		description: () => LocalizedString
-		/**
-		 * English
-		 */
-		en: () => LocalizedString
-		/**
-		 * Español
-		 */
-		es: () => LocalizedString
-	}
-	/**
-	 * This log was called from '{fileName}'
-	 */
-	log: (arg: { fileName: string }) => LocalizedString
+	HI: (arg: { name: string }) => LocalizedString
 }
 
 export type Formatters = {}

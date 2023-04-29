@@ -1,31 +1,31 @@
 const symbols = [{
     name: 'coin',
-    value: 0.1,
-    weight: 0.3,
+    value: 0.02,
+    weight: 0.35,
     asset: 'coin'
   },
   {
     name: 'coins',
-    value: .25,
+    value: 0.05,
     weight: 0.2,
     asset: 'coins'
   },
   {
     name: 'orange',
-    value: 0.5,
-    weight: 0.15,
+    value: 0.25,
+    weight: 0.175,
     asset: 'orange'
   },
   {
     name: 'green',
-    value: 0.5,
-    weight: 0.15,
+    value: 0.50,
+    weight: 0.1,
     asset: 'green'
   },
   {
     name: 'gem',
     value: 1,
-    weight: 0.1,
+    weight: 0.75,
     asset: 'gem'
   },
   {

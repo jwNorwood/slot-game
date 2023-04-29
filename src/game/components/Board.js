@@ -1,4 +1,5 @@
 import Reel from "./Reel.js";
+import { money, jackpot, freeSpins } from "../../lib/store/game";
 
 class Board extends Phaser.GameObjects
   .Container {
@@ -35,11 +36,12 @@ class Board extends Phaser.GameObjects
       );
       this.add(reel);
       this.reels.push(reel);
-      x += 50;
+      x += this.scene.scale.width / 6;
     }
   }
 
   spin() {
+    money.update((n) => n - 1);
     this.reels.forEach(function (reel) {
       reel.spin();
     });
@@ -75,7 +77,7 @@ class Board extends Phaser.GameObjects
         },
         0
       );
-      console.log("Total: " + total);
+      money.update((n) => n + total);
 
       matches.forEach(function (match) {
         match.forEach(function (sym) {
@@ -86,10 +88,7 @@ class Board extends Phaser.GameObjects
       const jackpotCount =
         this.countJackpot();
       if (jackpotCount >= 3) {
-        // this.scene.events.emit('jackpot', jackpotCount);
-        console.log(
-          "Jackpot! " + jackpotCount
-        );
+        jackpot.update(() => true);
       }
     };
     this.scene.time.delayedCall(
