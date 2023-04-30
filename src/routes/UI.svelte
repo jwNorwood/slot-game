@@ -2,18 +2,12 @@
 	import toast, { Toaster } from 'svelte-french-toast';
 	import { money, jackpot, freeSpins, bonusJackpotCollected } from '../lib/store/game';
 
-
-
-
-
 	jackpot.subscribe((value) => {
 		if (value === true) {
 			toast.success(`Jackpot!!!`);
 			freeSpins.set($freeSpins + 10);
 		}
 	});
-
-
 </script>
 
 <Toaster />
