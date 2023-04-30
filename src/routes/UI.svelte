@@ -12,7 +12,7 @@
 
 <Toaster />
 <div>
-	Money: {$money}
+	Money: {$money.toFixed(2)}
 </div>
 <div>
 	Jackpot: {$jackpot}
