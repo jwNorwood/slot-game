@@ -1,249 +1,153 @@
-import Reel from "./Reel.js";
-import { money, jackpot, freeSpins } from "../../lib/store/game";
+import Reel from './Reel.js';
+import { money, jackpot, freeSpins } from '../../lib/store/game';
+import { get } from 'svelte/store';
 
-class Board extends Phaser.GameObjects
-  .Container {
-  constructor(
-    scene,
-    x,
-    y,
-    symbols,
-    rows,
-    columns
-  ) {
-    super(scene, x, y);
-    this.symbols = symbols;
-    this.rows = rows;
-    this.columns = columns;
-    this.reels = [];
-    this.createBoard();
-  }
+class Board extends Phaser.GameObjects.Container {
 
-  createBoard() {
-    var x = 0;
-    var y = 0;
-    for (
-      var i = 0;
-      i < this.columns;
-      i++
-    ) {
-      var reel = new Reel(
-        this.scene,
-        x,
-        y,
-        this.symbols,
-        this.rows
-      );
-      this.add(reel);
-      this.reels.push(reel);
-      x += this.scene.scale.width / 6;
-    }
-  }
+	constructor(scene, x, y, symbols, rows, columns) {
+		super(scene, x, y);
+		this.symbols = symbols;
+		this.rows = rows;
+		this.columns = columns;
+		this.reels = [];
+		this.createBoard();
+	}
 
-  spin() {
-    money.update((n) => n - 1);
-    this.reels.forEach(function (reel) {
-      reel.spin();
-    });
+	createBoard() {
+		var x = 0;
+		var y = 0;
+		for (var i = 0; i < this.columns; i++) {
+			var reel = new Reel(this.scene, x, y, this.symbols, this.rows);
+			this.add(reel);
+			this.reels.push(reel);
+			x += this.scene.scale.width / 6;
+		}
+	}
 
-    const actions = () => {
-      const matches =
-        this.findMatches();
-      const total = matches.reduce(
-        (acc, match) => {
-          const nonWild = match.find(
-            (symbol) => {
-              return (
-                symbol.name !== "wild"
-              );
-            }
-          );
-          const modifer =
-            match.length - 2;
+	spin() {
+		if (get(freeSpins) < 1) {
+			money.update((n) => n - 1);			
+		} else {
+			freeSpins.update((n) => n - 1);
+		}
+		this.reels.forEach(function (reel) {
+			reel.spin();
+		});
 
-          return (
-            acc +
-            match.reduce(
-              (acc, symbol) => {
-                return parseFloat(
-                  acc +
-                    nonWild.value *
-                      modifer
-                );
-              },
-              0
-            )
-          );
-        },
-        0
-      );
-      money.update((n) => n + total);
+		const actions = () => {
+			const matches = this.findMatches();
+			const total = matches.reduce((acc, match) => {
+				const nonWild = match.find((symbol) => {
+					return symbol.name !== 'wild';
+				});
+				const modifer = match.length - 2;
 
-      matches.forEach(function (match) {
-        match.forEach(function (sym) {
-          sym.match();
-        });
-      });
+				return (
+					acc +
+					match.reduce((acc, symbol) => {
+						return parseFloat(acc + nonWild.value * modifer);
+					}, 0)
+				);
+			}, 0);
+			money.update((n) => n + total);
 
-      const jackpotCount =
-        this.countJackpot();
-      if (jackpotCount >= 3) {
-        jackpot.update(() => true);
-      }
-    };
-    this.scene.time.delayedCall(
-      100,
-      actions,
-      [],
-      this
-    );
-  }
+			matches.forEach(function (match) {
+				match.forEach(function (sym) {
+					sym.match();
+				});
+			});
 
-  stop() {
-    this.reels.forEach(function (reel) {
-      reel.stop();
-    });
-  }
+			const jackpotCount = this.countJackpot();
+			if (jackpotCount >= 3) {
+				jackpot.update(() => true);
+			}
+		};
+		this.scene.time.delayedCall(100, actions, [], this);
+	}
 
-  reset() {
-    this.reels.forEach(function (reel) {
-      reel.reset();
-    });
-  }
+	stop() {
+		this.reels.forEach(function (reel) {
+			reel.stop();
+		});
+	}
 
-  findMatches() {
-    var matches = [];
+	reset() {
+		this.reels.forEach(function (reel) {
+			reel.reset();
+		});
+	}
 
-    const checkNextColumn = (
-      currentSymbol,
-      currentMatch,
-      currentColumn,
-      currentRow
-    ) => {
-      if (
-        currentColumn <
-        this.columns - 1
-      ) {
-        const nextColumn =
-          currentColumn + 1;
-        const nextSymbols = [
-          this.reels[nextColumn].list[
-            currentRow - 1
-          ],
-          this.reels[nextColumn].list[
-            currentRow
-          ],
-          this.reels[nextColumn].list[
-            currentRow + 1
-          ],
-        ];
+	findMatches() {
+		var matches = [];
 
-        let nextMatches = [];
-        if (
-          currentSymbol.name === "wild"
-        ) {
-          const matchAgainst =
-            currentMatch.find(
-              (symbol) =>
-                symbol.name !==
-                  "wild" &&
-                symbol.name !==
-                  "jackpot"
-            );
-          if (!!matchAgainst) {
-            nextMatches =
-              nextSymbols.filter(
-                (symbol) =>
-                  symbol?.name ===
-                    matchAgainst.name ||
-                  symbol?.name ===
-                    "wild"
-              );
-          } else {
-            nextMatches =
-              nextSymbols.filter(
-                (symbol) =>
-                  !!symbol?.name &&
-                  symbol?.name !==
-                    "jackpot"
-              );
-          }
-        } else if (
-          currentSymbol.name !==
-          "jackpot"
-        ) {
-          nextMatches =
-            nextSymbols.filter(
-              (symbol) =>
-                symbol?.name ===
-                  currentSymbol.name ||
-                symbol?.name === "wild"
-            );
-        }
+		const checkNextColumn = (currentSymbol, currentMatch, currentColumn, currentRow) => {
+			if (currentColumn < this.columns - 1) {
+				const nextColumn = currentColumn + 1;
+				const nextSymbols = [
+					this.reels[nextColumn].list[currentRow - 1],
+					this.reels[nextColumn].list[currentRow],
+					this.reels[nextColumn].list[currentRow + 1]
+				];
 
-        if (nextMatches.length > 0) {
-          nextMatches.forEach(
-            (match) => {
-              const nextRow =
-                this.reels[
-                  nextColumn
-                ].list.indexOf(match);
-              checkNextColumn(
-                match,
-                [
-                  match,
-                  ...currentMatch,
-                ],
-                nextColumn,
-                nextRow
-              );
-            }
-          );
-        } else {
-          if (currentMatch.length > 2) {
-            matches.push(currentMatch);
-          }
-        }
-      } else {
-        if (currentMatch.length > 2) {
-          matches.push(currentMatch);
-        }
-      }
-    };
+				let nextMatches = [];
+				if (currentSymbol.name === 'wild') {
+					const matchAgainst = currentMatch.find(
+						(symbol) => symbol.name !== 'wild' && symbol.name !== 'jackpot'
+					);
+					if (!!matchAgainst) {
+						nextMatches = nextSymbols.filter(
+							(symbol) => symbol?.name === matchAgainst.name || symbol?.name === 'wild'
+						);
+					} else {
+						nextMatches = nextSymbols.filter(
+							(symbol) => !!symbol?.name && symbol?.name !== 'jackpot'
+						);
+					}
+				} else if (currentSymbol.name !== 'jackpot') {
+					nextMatches = nextSymbols.filter(
+						(symbol) => symbol?.name === currentSymbol.name || symbol?.name === 'wild'
+					);
+				}
 
-    this.reels[0].list.forEach(
-      (symbol, index) => {
-        const currentSymbol = symbol;
-        const currentMatch = [
-          currentSymbol,
-        ];
-        const currentColumn = 0;
-        const currentRow = index;
-        checkNextColumn(
-          currentSymbol,
-          currentMatch,
-          currentColumn,
-          currentRow
-        );
-      }
-    );
+				if (nextMatches.length > 0) {
+					nextMatches.forEach((match) => {
+						const nextRow = this.reels[nextColumn].list.indexOf(match);
+						checkNextColumn(match, [match, ...currentMatch], nextColumn, nextRow);
+					});
+				} else {
+					if (currentMatch.length > 2) {
+						matches.push(currentMatch);
+					}
+				}
+			} else {
+				if (currentMatch.length > 2) {
+					matches.push(currentMatch);
+				}
+			}
+		};
 
-    return matches;
-  }
+		this.reels[0].list.forEach((symbol, index) => {
+			const currentSymbol = symbol;
+			const currentMatch = [currentSymbol];
+			const currentColumn = 0;
+			const currentRow = index;
+			checkNextColumn(currentSymbol, currentMatch, currentColumn, currentRow);
+		});
 
-  countJackpot() {
-    var jackpot = 0;
-    this.reels.forEach(function (reel) {
-      reel.list.forEach(function (
-        symbol
-      ) {
-        if (symbol.name === "jackpot") {
-          jackpot++;
-        }
-      });
-    });
-    return jackpot;
-  }
+		return matches;
+	}
+
+	countJackpot() {
+		var jackpot = 0;
+		this.reels.forEach(function (reel) {
+			reel.list.forEach(function (symbol) {
+				if (symbol.name === 'jackpot') {
+					jackpot++;
+				}
+			});
+		});
+		return jackpot;
+	}
 }
 
 export default Board;

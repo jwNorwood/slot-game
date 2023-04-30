@@ -34,9 +34,16 @@ class Symbol extends Phaser.GameObjects.Sprite {
         // });
     }
 
-    match() {
-        // todo: add animation
-        this.setTint(0xff0000);
+    match() { 
+        this.scene.tweens.add({
+            targets: this,
+            scaleX: 1.1,
+            scaleY: 1.1,
+            duration: 200,
+            ease: 'Power2',
+            yoyo: true,
+        });
+
     }
 }
 

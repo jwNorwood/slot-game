@@ -7,13 +7,13 @@ const symbols = [{
   {
     name: 'coins',
     value: 0.05,
-    weight: 0.2,
+    weight: 0.19,
     asset: 'coins'
   },
   {
     name: 'orange',
     value: 0.25,
-    weight: 0.175,
+    weight: 0.2,
     asset: 'orange'
   },
   {
@@ -25,7 +25,7 @@ const symbols = [{
   {
     name: 'gem',
     value: 1,
-    weight: 0.75,
+    weight: 0.07,
     asset: 'gem'
   },
   {
